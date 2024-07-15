@@ -62,6 +62,9 @@
 #include "debug.h"
 #include "routines.h"
 
+#include <dos/dos.h>
+#include <proto/dos.h>
+
 /*
 *   MACROS
 */

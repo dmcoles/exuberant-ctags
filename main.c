@@ -25,6 +25,8 @@
 
 #include <string.h>
 
+#include "regex.h"
+
 /*  To provide timings features if available.
  */
 #ifdef HAVE_CLOCK
@@ -49,6 +51,8 @@
 # ifdef __SASC
    extern struct DosLibrary *DOSBase;
 #  include <pragmas/dos_pragmas.h>
+#include <proto/exec.h>
+extern struct Library *RegexBase;
 # endif
 #endif
 
@@ -518,6 +522,24 @@ static void makeTags (cookedArgs *args)
 #undef timeStamp
 }
 
+#ifdef __SASC
+
+int regexinit(void)
+{
+	if((RegexBase = OldOpenLibrary("regex.library")) == NULL)
+		{
+		((struct Process *)FindTask(NULL))->pr_Result2 = ERROR_INVALID_RESIDENT_LIBRARY;
+		return 1;
+		}
+	return 0;
+}
+
+void regexterm(void)
+{
+	CloseLibrary(RegexBase);
+}
+#endif
+
 /*
  *		Start up code
  */
@@ -535,6 +557,8 @@ extern int main (int __unused__ argc, char **argv)
 #ifdef AMIGA
 	/* This program doesn't work when started from the Workbench */
 	if (argc == 0)
+		exit (1);
+	if (regexinit())
 		exit (1);
 #endif
 
@@ -571,8 +595,9 @@ extern int main (int __unused__ argc, char **argv)
 	freeOptionResources ();
 	freeParserResources ();
 	freeRegexResources ();
+	regexterm();
 
-	exit (0);
+	//exit (0);
 	return 0;
 }
 

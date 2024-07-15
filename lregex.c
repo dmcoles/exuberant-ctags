@@ -26,7 +26,7 @@
 # ifdef HAVE_SYS_TYPES_H
 #  include <sys/types.h>  /* declare off_t (not known to regex.h on FreeBSD) */
 # endif
-# include <regex.h>
+# include "regex.h"
 #endif
 
 #include "debug.h"
@@ -36,6 +36,8 @@
 #include "routines.h"
 
 #ifdef HAVE_REGEX
+
+struct Library *RegexBase;
 
 /*
 *   MACROS
@@ -326,16 +328,19 @@ static regex_t* compileRegex (const char* const regexp, const char* const flags)
 			default: error (WARNING, "unknown regex flag: '%c'", *flags); break;
 		}
 	}
-	result = xMalloc (1, regex_t);
-	errcode = regcomp (result, regexp, cflags);
-	if (errcode != 0)
+	if (RegexBase)
 	{
-		char errmsg[256];
-		regerror (errcode, result, errmsg, 256);
-		error (WARNING, "regcomp %s: %s", regexp, errmsg);
-		regfree (result);
-		eFree (result);
-		result = NULL;
+		result = xMalloc (1, regex_t);
+		errcode = regcomp (result, regexp, cflags);
+		if (errcode != 0)
+		{
+			char errmsg[256];
+			regerror (errcode, result, errmsg, 256);
+			error (WARNING, "regcomp %s: %s", regexp, errmsg);
+			regfree (result);
+			eFree (result);
+			result = NULL;
+		}
 	}
 	return result;
 }

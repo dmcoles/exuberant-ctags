@@ -20,6 +20,8 @@
 
 #include "readtags.h"
 
+#define READTAGS_MAIN
+
 /*
 *   MACROS
 */
@@ -45,9 +47,9 @@ struct sTagFile {
 		/* pointer to file structure */
 	FILE* fp;
 		/* file position of first character of `line' */
-	off_t pos;
+	unsigned long pos;
 		/* size of tag file in seekable positions */
-	off_t size;
+	unsigned long size;
 		/* last line read */
 	vstring line;
 		/* name of tag in last line read */
@@ -55,7 +57,7 @@ struct sTagFile {
 		/* defines tag search state */
 	struct {
 				/* file position of last match for tag */
-			off_t pos; 
+			unsigned long pos; 
 				/* name of tag last searched for */
 			char *name;
 				/* length of name for partial matches */
@@ -522,7 +524,7 @@ static const char *readFieldValue (
 	return result;
 }
 
-static int readTagLineSeek (tagFile *const file, const off_t pos)
+static int readTagLineSeek (tagFile *const file, const unsigned long pos)
 {
 	int result = 0;
 	if (fseek (file->fp, pos, SEEK_SET) == 0)
@@ -561,11 +563,11 @@ static void findFirstNonMatchBefore (tagFile *const file)
 #define JUMP_BACK 512
 	int more_lines;
 	int comp;
-	off_t start = file->pos;
-	off_t pos = start;
+	unsigned long start = file->pos;
+	unsigned long pos = start;
 	do
 	{
-		if (pos < (off_t) JUMP_BACK)
+		if (pos < JUMP_BACK)
 			pos = 0;
 		else
 			pos = pos - JUMP_BACK;
@@ -578,7 +580,7 @@ static tagResult findFirstMatchBefore (tagFile *const file)
 {
 	tagResult result = TagFailure;
 	int more_lines;
-	off_t start = file->pos;
+	unsigned long start = file->pos;
 	findFirstNonMatchBefore (file);
 	do
 	{
@@ -592,10 +594,10 @@ static tagResult findFirstMatchBefore (tagFile *const file)
 static tagResult findBinary (tagFile *const file)
 {
 	tagResult result = TagFailure;
-	off_t lower_limit = 0;
-	off_t upper_limit = file->size;
-	off_t last_pos = 0;
-	off_t pos = upper_limit / 2;
+	unsigned long lower_limit = 0;
+	unsigned long upper_limit = file->size;
+	unsigned long last_pos = 0;
+	unsigned long pos = upper_limit / 2;
 	while (result != TagSuccess)
 	{
 		if (! readTagLineSeek (file, pos))
@@ -877,7 +879,7 @@ const char *const Usage =
 	"    -t file      Use specified tag file (default: \"tags\").\n"
 	"Note that options are acted upon as encountered, so order is significant.\n";
 
-extern int main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	int options = 0;
 	int actionSupplied = 0;

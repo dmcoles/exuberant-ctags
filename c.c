@@ -1029,7 +1029,7 @@ static void addOtherFields (tagEntryInfo* const tag, const tagType type,
 	}
 
 	/* Add typename info, type of the tag and name of struct/union/etc. */
-	if ((type == TAG_TYPEDEF || type == TAG_VARIABLE || type == TAG_MEMBER)
+	if ((type == TAG_TYPEDEF || type == TAG_VARIABLE || type == TAG_LOCAL || type == TAG_MEMBER)
 			&& isContextualStatement(st))
 	{
 		char *p;
@@ -1135,7 +1135,6 @@ static void makeTag (const tokenInfo *const token,
 	/*  Nothing is really of file scope when it appears in a header file.
 	 */
 	isFileScope = (boolean) (isFileScope && ! isHeaderFile ());
-
 	if (isType (token, TOKEN_NAME)  &&  vStringLength (token->name) > 0  &&
 		includeTag (type, isFileScope))
 	{
@@ -2660,7 +2659,9 @@ static void nest (statementInfo *const st, const unsigned int nestLevel)
 			/* fall through */
 		default:
 			if (includeTag (TAG_LOCAL, FALSE))
+			{
 				createTags (nestLevel, st);
+			}
 			else
 				skipToMatch ("{}");
 			break;

@@ -15,10 +15,11 @@
 #define HAVE_SYS_STAT_H 1
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_TIME_H 1
+#define HAVE_FCNTL_H 1
 #define HAVE_CLOCK 1
 #define HAVE_FGETPOS 1
 #define HAVE_STRERROR 1
 #define HAVE_STRICMP 1
 #define HAVE_STRNICMP 1
-
+#define HAVE_REGCOMP 1
 #endif

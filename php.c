@@ -58,8 +58,10 @@ static kindOption PhpKinds [] = {
 #define ALPHA "[:alpha:]"
 #define ALNUM "[:alnum:]"
 #else
-#define ALPHA "A-Za-z\x7f-\xff"
-#define ALNUM "0-9A-Za-z\x7f-\xff"
+//#define ALPHA "A-Za-z\x7f-\xff"
+//#define ALNUM "0-9A-Za-z\x7f-\xff"
+#define ALPHA "A-Za-z"
+#define ALNUM "0-9A-Za-z"
 #endif
 
 static void installPHPRegex (const langType language)

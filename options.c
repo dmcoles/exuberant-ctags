@@ -1690,7 +1690,7 @@ extern void previewFirstOption (cookedArgs* const args)
 	}
 }
 
-static void parseConfigurationFileOptionsInDirectoryWithLeafname (const char* directory, const char* leafname)
+static void parseCFgFileOptionsInDirWithLeafname (const char* directory, const char* leafname)
 {
 	vString* const pathname = combinePathAndFile (directory, leafname);
 	parseFileOptions (vStringValue (pathname));
@@ -1699,9 +1699,9 @@ static void parseConfigurationFileOptionsInDirectoryWithLeafname (const char* di
 
 static void parseConfigurationFileOptionsInDirectory (const char* directory)
 {
-	parseConfigurationFileOptionsInDirectoryWithLeafname (directory, ".ctags");
+	parseCFgFileOptionsInDirWithLeafname (directory, ".ctags");
 #ifdef MSDOS_STYLE_PATH
-	parseConfigurationFileOptionsInDirectoryWithLeafname (directory, "ctags.cnf");
+	parseCFgFileOptionsInDirWithLeafname (directory, "ctags.cnf");
 #endif
 }
 

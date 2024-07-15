@@ -26,6 +26,8 @@
 #include "read.h"
 #include "routines.h"
 #include "sort.h"
+#include <clib/exec_protos.h>
+#include <proto/exec.h>
 
 /*
 *   FUNCTION DEFINITIONS
@@ -131,10 +133,10 @@ static int compareTags (const void *const one, const void *const two)
 }
 
 static void writeSortedTags (
-		char **const table, const size_t numTags, const boolean toStdout)
+		char **const table, const long numTags, const boolean toStdout)
 {
 	FILE *fp;
-	size_t i;
+	long i;
 
 	/*  Write the sorted lines back into the tag file.
 	 */
@@ -166,16 +168,16 @@ extern void internalSortTags (const boolean toStdout)
 	vString *vLine = vStringNew ();
 	FILE *fp = NULL;
 	const char *line;
-	size_t i;
+	long i;
 	int (*cmpFunc)(const void *, const void *);
+	char **table;
 
 	/*  Allocate a table of line pointers to be sorted.
 	 */
-	size_t numTags = TagFile.numTags.added + TagFile.numTags.prev;
-	const size_t tableSize = numTags * sizeof (char *);
-	char **const table = (char **) malloc (tableSize);  /* line pointers */
-	DebugStatement ( size_t mallocSize = tableSize; )  /* cumulative total */
-
+	long numTags = TagFile.numTags.added + TagFile.numTags.prev;
+	const long tableSize = numTags * sizeof (char *);
+	table = (char **) AllocVec (tableSize,0);  /* line pointers */
+	DebugStatement ( long mallocSize = tableSize; )  /* cumulative total */
 
 	cmpFunc = Option.sorted == SO_FOLDSORTED ? compareTagsFolded : compareTags;
 	if (table == NULL)
@@ -199,9 +201,10 @@ extern void internalSortTags (const boolean toStdout)
 			;  /* ignore blank lines */
 		else
 		{
-			const size_t stringSize = strlen (line) + 1;
+			const long stringSize = strlen (line) + 1;
 
-			table [i] = (char *) malloc (stringSize);
+			//table [i] = (char *) malloc (stringSize);
+			table [i] = (char *) AllocVec (stringSize,0);
 			if (table [i] == NULL)
 				failedSort (fp, "out of memory");
 			DebugStatement ( mallocSize += stringSize; )
@@ -220,9 +223,10 @@ extern void internalSortTags (const boolean toStdout)
 	writeSortedTags (table, numTags, toStdout);
 
 	PrintStatus (("sort memory: %ld bytes\n", (long) mallocSize));
-	for (i = 0 ; i < numTags ; ++i)
-		free (table [i]);
-	free (table);
+	for (i = 0 ; i < numTags ; i++)
+		FreeVec(table [i]);
+		//free (table [i]);
+	FreeVec (table);
 }
 
 #endif
